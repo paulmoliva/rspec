@@ -1,18 +1,5 @@
 require 'rspec'
-require 'card'
 require 'deck'
-
-describe Card do
-  let(:card) { Card.new(:spades, :ten) }
-
-  describe '#initialize' do
-    it 'creates new cards given a suit and a type' do
-      expect(card.suit).to eq (:spades)
-      expect(card.type).to eq (:ten)
-      expect(card.val).to eq (10)
-    end
-  end
-end
 
 describe Deck do
   let(:deck) { Deck.new }
@@ -38,7 +25,7 @@ describe Deck do
     it 'each suit contains correct cards' do
       suits = [spades, clubs, hearts, diamonds]
       suits.each do |suit|
-        expect(suit.map{|el| el.val}.flatten.sort).to eq([1,2,3,4,5,6,7,8,9,10,11,12,13,14])
+        expect(suit.map{|el| el.val}.flatten.sort).to eq([2,3,4,5,6,7,8,9,10,11,12,13,14])
       end
     end
   end

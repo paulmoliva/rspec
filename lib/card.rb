@@ -12,7 +12,7 @@ class Card
     jack: 11,
     queen: 12,
     king: 13,
-    ace: [1, 14]
+    ace: 14
   }
 
   SUITS = [:spades, :clubs, :hearts, :diamonds]
