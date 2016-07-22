@@ -80,13 +80,13 @@ describe Hand do
       expect(three_of_a_kind.score).to eq(10_010)
     end
     it 'assigns score to two pair' do
-      expect(two_pair.score).to eq(1021)
+      expect(two_pair.score).to eq(1011)
     end
     it 'assigns score to one pair' do
       expect(one_pair.score).to eq(110)
     end
     it 'assigns score to high card' do
-      expect(high_card.score).to eq(49)
+      expect(high_card.score).to eq(13)
     end
   end
 end
