@@ -15,5 +15,9 @@ class Deck
       @store.shuffle!
     end
 
+    def pop!
+      @store.pop
+    end
+
   end
 end

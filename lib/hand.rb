@@ -60,14 +60,14 @@ class Hand
 
   def show
     #print_card_border
-    @cards.each{|c| print c.top_print_type}
+    sort_cards_by_rank.each{|c| print c.top_print_type}
     puts ""
-    @cards.each{|c| print c.print_suit}
+    sort_cards_by_rank.each{|c| print c.print_suit}
     puts ""
-    @cards.each{|c| print c.bottom_print_type}
+    sort_cards_by_rank.each{|c| print c.bottom_print_type}
     puts ""
     #print_card_border
-    puts ""
+    puts "\t#{hand_type_to_s}"
   end
 
 protected
@@ -76,6 +76,15 @@ protected
   end
 
 private
+
+  def hand_type_to_s
+    hand_check.to_s.split("_").join(" ") + "!"
+  end
+
+  def sort_cards_by_rank
+    @cards.sort{|h, l| l.val <=> h.val}
+  end
+
   def hand_check
     if straight_flush?
       return :straight_flush
