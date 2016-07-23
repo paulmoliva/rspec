@@ -18,7 +18,15 @@ class Hand
   attr_reader :cards, :card_vals
   def initialize(cards)
     @cards = cards
-    @card_vals = @cards.map { |c| c.val }
+    update_card_vals
+  end
+
+  def length
+    @cards.length
+  end
+
+  def delete_at(i)
+    @cards.delete_at(i)
   end
 
   def add_card(card)
@@ -70,6 +78,14 @@ class Hand
     puts "\t#{hand_type_to_s}"
   end
 
+  def push(card)
+    @cards << card
+  end
+
+  def update_card_vals
+    @card_vals = @cards.map { |c| c.val }
+  end
+
 protected
   def chunk_hand_vals
     sort_by_rank.chunk_while{|x,y| x == y}.to_a.map(&:first)
@@ -77,15 +93,17 @@ protected
 
 private
 
+
   def hand_type_to_s
     hand_check.to_s.split("_").join(" ") + "!"
   end
 
   def sort_cards_by_rank
-    @cards.sort{|h, l| l.val <=> h.val}
+    @cards.sort!{|h, l| l.val <=> h.val}
   end
 
   def hand_check
+    # byebug
     if straight_flush?
       return :straight_flush
     elsif four_of_a_kind?

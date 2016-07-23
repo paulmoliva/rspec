@@ -19,5 +19,9 @@ class Deck
       @store.pop
     end
 
+    def push(card)
+      @store.unshift(card)
+    end
+
   end
 end

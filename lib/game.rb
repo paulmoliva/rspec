@@ -57,10 +57,14 @@ end
 
 if __FILE__ == $PROGRAM_NAME
   deck = Deck.new
-  p1 = Player.new
-  p2 = Player.new
+  p1 = Player.new(deck)
+  p2 = Player.new(deck)
   game = Game.new(deck, [p1,p2])
   game.deal
+  # game.show
+  draw_amt = p1.get_draw_amt
+  p1.get_draw(draw_amt)
+  p1.take(draw_amt)
   game.show
   game.get_winner
 end
