@@ -1,3 +1,6 @@
+require_relative 'card.rb'
+require_relative 'deck.rb'
+
 class Hand
 
   HAND_MAGNITUDES = {
@@ -29,14 +32,13 @@ class Hand
   def score
     type = hand_check
     base_score = 10 ** HAND_MAGNITUDES[type]
-    if type == :straight_flush || type == :straight
+    if type == :straight_flush || type == :straight || type == :flush ||
+      type == :full_house
       base_score + @card_vals.max
     elsif type == :four_of_a_kind || type == :three_of_a_kind
       base_score + sort_by_rank[2]
-    elsif type == :full_house
-      base_score + @card_vals.max
-    elsif type == :flush
-      base_score + @card_vals.max
+    # elsif type == :full_house
+    #   base_score + @card_vals.max
     elsif type == :two_pair
       base_score + sort_by_rank[3]
     elsif type == :one_pair
@@ -44,6 +46,31 @@ class Hand
     elsif type == :high_card
       sort_by_rank.last
     end
+  end
+
+  def <=>(other_hand)
+    if score > other_hand.score
+      return 1
+    elsif score < other_hand.score
+      return -1
+    else
+      return tiebreaker(other_hand)
+    end
+  end
+
+  def show
+    #print_card_border
+    @cards.each{|c| print c.print_type}
+    puts ""
+    @cards.each{|c| print c.print_suit}
+    puts ""
+    #print_card_border
+    puts ""
+  end
+
+protected
+  def chunk_hand_vals
+    sort_by_rank.chunk_while{|x,y| x == y}.to_a.map(&:first)
   end
 
 private
@@ -67,6 +94,21 @@ private
     else
       return :high_card
     end
+  end
+
+  def tiebreaker(other_hand)
+    my_card_vals = chunk_hand_vals
+    other_hand_vals = other_hand.chunk_hand_vals
+    until my_card_vals.empty?
+      my_card = my_card_vals.pop
+      other_card = other_hand_vals.pop
+      if my_card > other_card
+        return 1
+      elsif other_card > my_card
+        return -1
+      end
+    end
+    0
   end
 
 
@@ -112,4 +154,24 @@ private
   def change_ace_val_to_1
     @cards.map { |c| c.val == 14 ? 1 : c.val }
   end
+
+  def print_card_border
+    5.times do
+      print "   ".colorize( :background => :white) + " "
+    end
+    puts ""
+  end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  deck = Deck.new
+  deck.shuffle!
+  h1 = []
+  h2 = []
+  5.times {h1 << deck.store.pop}
+  5.times {h2 << deck.store.pop}
+  hand1 = Hand.new(h1)
+  hand2 = Hand.new(h2)
+  hand1.show
+  hand2.show
 end

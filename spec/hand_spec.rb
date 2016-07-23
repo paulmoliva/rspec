@@ -10,6 +10,23 @@ describe Hand do
   let(:six_of_diamonds) {double("card", suit: :diamonds, type: :six, val: 6)}
   let(:cards) {[two_of_diamonds, three_of_diamonds, four_of_diamonds, five_of_diamonds, six_of_diamonds]}
   let(:hand) { Hand.new(cards) }
+  let(:ten_of_diamonds) {double("card", suit: :diamonds, type: :ten, val: 10)}
+  let(:ten_of_hearts) {double("card", suit: :hearts, type: :ten, val: 10)}
+  let(:jack_of_diamonds) {double("card", suit: :diamonds, type: :jack, val: 11)}
+  let(:queen_of_diamonds) {double("card", suit: :diamonds, type: :queen, val: 12)}
+  let(:king_of_diamonds) {double("card", suit: :diamonds, type: :king, val: 13)}
+  let(:ace_of_diamonds) {double("card", suit: :diamonds, type: :ace, val: 14)}
+  let(:two_of_diamonds) {double("card", suit: :diamonds, type: :two, val: 2)}
+  let(:str_flush) {Hand.new([ten_of_diamonds, jack_of_diamonds, queen_of_diamonds, king_of_diamonds, ace_of_diamonds])}
+  let(:four_of_a_kind) {Hand.new([ten_of_diamonds, ten_of_diamonds, ten_of_diamonds, ten_of_diamonds, ace_of_diamonds])}
+  let(:full_house) {Hand.new([ten_of_diamonds, ten_of_diamonds, ten_of_diamonds, jack_of_diamonds, jack_of_diamonds])}
+  let(:flush) {Hand.new([ten_of_diamonds, two_of_diamonds, king_of_diamonds, jack_of_diamonds, queen_of_diamonds])}
+  let(:straight) {Hand.new([ten_of_hearts, ace_of_diamonds, king_of_diamonds, jack_of_diamonds, queen_of_diamonds])}
+  let(:three_of_a_kind) {Hand.new([ten_of_hearts, ten_of_hearts, ten_of_hearts, jack_of_diamonds, queen_of_diamonds])}
+  let(:two_pair) {Hand.new([ten_of_hearts, ten_of_hearts, jack_of_diamonds, jack_of_diamonds, queen_of_diamonds])}
+  let(:one_pair) {Hand.new([ten_of_hearts, ten_of_hearts, king_of_diamonds, jack_of_diamonds, queen_of_diamonds])}
+  let(:lower_one_pair) {Hand.new([ten_of_hearts, ten_of_hearts, king_of_diamonds, jack_of_diamonds, six_of_diamonds])}
+  let(:high_card) {Hand.new([ten_of_hearts, two_of_diamonds, king_of_diamonds, jack_of_diamonds, queen_of_diamonds])}
   describe '#initialize' do
     it 'intializes with 5 cards in hand' do
       expect(hand.cards.length).to eq (5)
@@ -45,22 +62,6 @@ describe Hand do
   end
 
   describe '#score' do
-    let(:ten_of_diamonds) {double("card", suit: :diamonds, type: :ten, val: 10)}
-    let(:ten_of_hearts) {double("card", suit: :hearts, type: :ten, val: 10)}
-    let(:jack_of_diamonds) {double("card", suit: :diamonds, type: :jack, val: 11)}
-    let(:queen_of_diamonds) {double("card", suit: :diamonds, type: :queen, val: 12)}
-    let(:king_of_diamonds) {double("card", suit: :diamonds, type: :king, val: 13)}
-    let(:ace_of_diamonds) {double("card", suit: :diamonds, type: :ace, val: 14)}
-    let(:two_of_diamonds) {double("card", suit: :diamonds, type: :two, val: 2)}
-    let(:str_flush) {Hand.new([ten_of_diamonds, jack_of_diamonds, queen_of_diamonds, king_of_diamonds, ace_of_diamonds])}
-    let(:four_of_a_kind) {Hand.new([ten_of_diamonds, ten_of_diamonds, ten_of_diamonds, ten_of_diamonds, ace_of_diamonds])}
-    let(:full_house) {Hand.new([ten_of_diamonds, ten_of_diamonds, ten_of_diamonds, jack_of_diamonds, jack_of_diamonds])}
-    let(:flush) {Hand.new([ten_of_diamonds, two_of_diamonds, king_of_diamonds, jack_of_diamonds, queen_of_diamonds])}
-    let(:straight) {Hand.new([ten_of_hearts, ace_of_diamonds, king_of_diamonds, jack_of_diamonds, queen_of_diamonds])}
-    let(:three_of_a_kind) {Hand.new([ten_of_hearts, ten_of_hearts, ten_of_hearts, jack_of_diamonds, queen_of_diamonds])}
-    let(:two_pair) {Hand.new([ten_of_hearts, ten_of_hearts, jack_of_diamonds, jack_of_diamonds, queen_of_diamonds])}
-    let(:one_pair) {Hand.new([ten_of_hearts, ten_of_hearts, king_of_diamonds, jack_of_diamonds, queen_of_diamonds])}
-    let(:high_card) {Hand.new([ten_of_hearts, two_of_diamonds, king_of_diamonds, jack_of_diamonds, queen_of_diamonds])}
     it 'assigns straight flush a score' do
       expect(str_flush.score).to eq(1_000_000_014)
     end
@@ -87,6 +88,27 @@ describe Hand do
     end
     it 'assigns score to high card' do
       expect(high_card.score).to eq(13)
+    end
+  end
+
+  describe '#<=>' do
+    it 'straight flush beats a flush' do
+      expect(str_flush<=>(flush)).to eq(1)
+    end
+    it 'four of a kind beats a full house' do
+      expect(four_of_a_kind<=>(full_house)).to eq(1)
+    end
+    it 'three_of_a_kind beats a two_pair' do
+      expect(three_of_a_kind<=>(two_pair)).to eq(1)
+    end
+    it 'one_pair beats a high_card' do
+      expect(one_pair<=>(high_card)).to eq(1)
+    end
+    it 'breaks ties' do
+      expect(one_pair<=>lower_one_pair).to eq(1)
+    end
+    it 'returns 0 on ties' do
+      expect(one_pair<=>one_pair).to eq(0)
     end
   end
 end

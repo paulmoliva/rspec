@@ -1,7 +1,7 @@
 require_relative 'card.rb'
 
 class Deck
-  attr_reader :store
+  attr_reader :store, :store
 
   def initialize
     @store = []
@@ -9,6 +9,10 @@ class Deck
       Card::CARD_VALS.keys.each do |type|
         @store << Card.new(suit, type)
       end
+    end
+
+    def shuffle!
+      @store.shuffle!
     end
 
   end
