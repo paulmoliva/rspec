@@ -38,6 +38,7 @@ class Hand
   end
 
   def score
+    return 0 if length == 0
     type = hand_check
     base_score = 10 ** HAND_MAGNITUDES[type]
     if type == :straight_flush || type == :straight || type == :flush ||
@@ -86,13 +87,20 @@ class Hand
     @card_vals = @cards.map { |c| c.val }
   end
 
+  def [](i)
+    @cards[i]
+  end
+
+  def empty?
+    length == 0
+  end
+
 protected
   def chunk_hand_vals
     sort_by_rank.chunk_while{|x,y| x == y}.to_a.map(&:first)
   end
 
 private
-
 
   def hand_type_to_s
     hand_check.to_s.split("_").join(" ") + "!"

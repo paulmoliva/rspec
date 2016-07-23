@@ -1,6 +1,7 @@
+require 'byebug'
 class Player
   attr_reader :hand, :deck
-  attr_accessor :bankroll
+  attr_accessor :bankroll, :folded
 
   def initialize(bankroll = 1000, deck)
     @bankroll = bankroll
@@ -12,10 +13,67 @@ class Player
   end
 
   def show
+    if folded
+      puts "Folded!"
+      return
+    end
     hand.show
   end
 
+  def play_draw_turn
+    return if folded
+    draw_amt = get_draw_amt
+    get_draw(draw_amt)
+    take(draw_amt)
+  end
+
+  def bet(amt)
+    raise StandardError.new("Player can't afford bet!") if amt > @bankroll
+    @bankroll -= amt
+  end
+
+  def call_bet(amt)
+    puts "call $#{amt} bet? (y/n)"
+    puts "your bankroll: $#{bankroll}"
+    ans = gets.chomp.upcase
+    if ans == 'Y'
+      bet(amt)
+      amt
+    else
+      fold
+      0
+    end
+  end
+
+  def get_bet
+    begin
+      system("clear")
+      hand.show
+      puts "your bankroll: $#{bankroll}"
+      puts "enter bet amount (0 to check): "
+      amt = gets.to_i
+      raise StandardError.new("Player can't afford bet!") if amt > @bankroll
+      bet(amt)
+      amt
+    rescue => e
+      puts e.message
+      retry
+    end
+  end
+
+
+private
+
+  def fold
+    until hand.empty? do
+      discard(0)
+    end
+    @folded = true
+  end
+
+
   def get_draw_amt
+    return 0 if folded
     begin
       puts "How many cards would you ike to draw?"
       hand.show
@@ -28,7 +86,6 @@ class Player
       retry
     end
   end
-require 'byebug'
   def get_draw(num)
     num.times do
       system("clear")
@@ -50,6 +107,7 @@ require 'byebug'
   end
 
   def discard(card)
+    # byebug
     deck.push(hand.delete_at(card))
   end
 

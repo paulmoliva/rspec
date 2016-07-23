@@ -1,5 +1,6 @@
 require_relative 'player.rb'
 require_relative 'hand.rb'
+require 'io/console'
 
 class Game
   attr_reader :deck, :pot, :players
@@ -7,6 +8,7 @@ class Game
   def initialize(deck, players)
     @deck = deck
     @players = players
+    @pot = 0
   end
 
   def deal
@@ -26,25 +28,79 @@ class Game
     player_one.show
     puts "Player Two: "
     player_two.show
+    puts "current pot: $#{pot}"
   end
 
   def get_winner
     case (player_one.hand <=> player_two.hand)
     when 1
       winner = player_one
-      puts 'Player One wins'
+      puts "Player One wins $#{@pot}"
     when 0
       winner = nil
       puts 'Tie!'
     when -1
       winner = player_two
-      puts 'Player Two wins'
+      puts "Player Two wins $#{@pot}"
     end
+    pay_winnings(winner)
     winner
   end
 
+  def play_draw_turns
+    return if players.any?{|p| p.folded}
+    players.each {|p| p.play_draw_turn}
+  end
 
-  private
+  def run
+    round = 0
+    loop do
+      play_turn(round)
+      round += 1
+    end
+  end
+
+
+  def play_turn(round)
+    reset_round
+    deal
+    ante_up
+    show
+    play_bet_turn(round)
+    play_draw_turns
+    play_bet_turn(round + 1)
+    show
+    get_winner
+    continue
+  end
+
+private
+
+  def continue
+    puts "your bankroll is $#{players[0].bankroll}"
+    puts "Press any key to continue."
+    STDIN.getch
+  end
+
+  def play_bet_turn(round)
+    return if players.any?{|p| p.folded}
+    turn = round % 2
+    turn == 0 ? other_player = 1 : other_player = 0
+    puts "Player #{turn + 1}'s turn:'"
+    amt = players[turn].get_bet
+    unless amt == 0
+      puts "Player #{other_player + 1}'s turn:'"
+      amt += players[other_player].call_bet(amt)
+    else
+      puts "Check!"
+    end
+    @pot += amt
+  end
+  def reset_round
+    players.each{|p| p.folded = false}
+    system("clear")
+  end
+
   def player_one
     players.first
   end
@@ -53,6 +109,20 @@ class Game
     players.last
   end
 
+  def ante_up
+    puts "paying $25 ante!"
+    players.each{|p| p.bet(25)}
+    @pot += 50
+  end
+
+  def pay_winnings(winner)
+    if winner.nil?
+      players.each{|p| p.bankroll += pot / 2}
+    else
+      winner.bankroll += pot
+  end
+    @pot = 0
+  end
 end
 
 if __FILE__ == $PROGRAM_NAME
@@ -60,11 +130,5 @@ if __FILE__ == $PROGRAM_NAME
   p1 = Player.new(deck)
   p2 = Player.new(deck)
   game = Game.new(deck, [p1,p2])
-  game.deal
-  # game.show
-  draw_amt = p1.get_draw_amt
-  p1.get_draw(draw_amt)
-  p1.take(draw_amt)
-  game.show
-  game.get_winner
+  game.run
 end
