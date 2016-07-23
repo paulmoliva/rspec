@@ -61,10 +61,18 @@ class Card
   def print_suit
     " #{SUIT_SYM[@suit]}  ".colorize(SUIT_COLORS[@suit]).colorize(:background => :white) + " "
   end
-  def print_type
+  def top_print_type
     @type == :ten ? buff = '' : buff = " "
-    " #{CARD_VAL_SYMS[@type]} ".colorize(SUIT_COLORS[@suit]).colorize(:background => :white) + buff.colorize(:background => :white) + " "
+    "#{CARD_VAL_SYMS[@type]}  ".colorize(SUIT_COLORS[@suit]).colorize(:background => :white) + buff.colorize(:background => :white) + " "
   end
+
+  def bottom_print_type
+    @type == :ten ? buff = '' : buff = " "
+    buff.colorize(:background => :white) + "  #{CARD_VAL_SYMS[@type]}".colorize(SUIT_COLORS[@suit]).colorize(:background => :white) +  " "
+  end
+
+
+
 
   def str_output_helper(n, str)
     until str.length == n

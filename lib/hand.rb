@@ -60,9 +60,11 @@ class Hand
 
   def show
     #print_card_border
-    @cards.each{|c| print c.print_type}
+    @cards.each{|c| print c.top_print_type}
     puts ""
     @cards.each{|c| print c.print_suit}
+    puts ""
+    @cards.each{|c| print c.bottom_print_type}
     puts ""
     #print_card_border
     puts ""
