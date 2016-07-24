@@ -33,7 +33,8 @@ class Player
   end
 
   def call_bet(amt)
-    puts "call $#{amt} bet? (y/n)"
+    hand.show
+    puts "call $#{amt} bet? (y to call, n to fold)"
     puts "your bankroll: $#{bankroll}"
     ans = gets.chomp.upcase
     if ans == 'Y'
@@ -41,13 +42,14 @@ class Player
       amt
     else
       fold
+      puts "You folded!"
       0
     end
   end
 
   def get_bet
     begin
-      system("clear")
+      #system("clear")
       hand.show
       puts "your bankroll: $#{bankroll}"
       puts "enter bet amount (0 to check): "
@@ -75,7 +77,7 @@ private
   def get_draw_amt
     return 0 if folded
     begin
-      puts "How many cards would you ike to draw?"
+      puts "How many cards would you like to draw?"
       hand.show
       ans = gets.to_i
       raise StandardError.new ("Must draw between 0 and 3 cards") unless ans.between?(0,3)

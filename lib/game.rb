@@ -1,4 +1,5 @@
 require_relative 'player.rb'
+require_relative 'computer_player.rb'
 require_relative 'hand.rb'
 require 'io/console'
 
@@ -24,9 +25,12 @@ class Game
   end
 
   def show
-    puts "Player One: "
+    system("clear")
+    puts "Your hand: "
+    sleep(0.5)
     player_one.show
-    puts "Player Two: "
+    puts "Computer player's hand: "
+    sleep(2)
     player_two.show
     puts "current pot: $#{pot}"
   end
@@ -48,8 +52,7 @@ class Game
   end
 
   def play_draw_turns
-    return if players.any?{|p| p.folded}
-    players.each {|p| p.play_draw_turn}
+    players.each {|p| p.play_draw_turn} unless @players.any?{|p| p.folded}
   end
 
   def run
@@ -65,16 +68,19 @@ class Game
     reset_round
     deal
     ante_up
-    show
     play_bet_turn(round)
     play_draw_turns
     play_bet_turn(round + 1)
-    show
+    show unless folded?
     get_winner
     continue
   end
 
 private
+
+def folded?
+  players.any?{|p| p.folded}
+end
 
   def continue
     puts "your bankroll is $#{players[0].bankroll}"
@@ -86,10 +92,10 @@ private
     return if players.any?{|p| p.folded}
     turn = round % 2
     turn == 0 ? other_player = 1 : other_player = 0
-    puts "Player #{turn + 1}'s turn:'"
+    puts "Player #{turn + 1}'s turn: "
     amt = players[turn].get_bet
     unless amt == 0
-      puts "Player #{other_player + 1}'s turn:'"
+      puts "Player #{other_player + 1}'s turn: "
       amt += players[other_player].call_bet(amt)
     else
       puts "Check!"
@@ -128,7 +134,7 @@ end
 if __FILE__ == $PROGRAM_NAME
   deck = Deck.new
   p1 = Player.new(deck)
-  p2 = Player.new(deck)
+  p2 = ComputerPlayer.new(deck)
   game = Game.new(deck, [p1,p2])
   game.run
 end

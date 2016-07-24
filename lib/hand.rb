@@ -21,12 +21,22 @@ class Hand
     update_card_vals
   end
 
+  def dup
+    new_cards = []
+    @cards.each{|c| new_cards << c.dup}
+    new_hand = Hand.new(new_cards)
+    new_hand
+  end
+
   def length
     @cards.length
   end
 
   def delete_at(i)
+    return_val = @cards[i]
     @cards.delete_at(i)
+    update_card_vals
+    return_val
   end
 
   def add_card(card)
@@ -34,7 +44,7 @@ class Hand
   end
 
   def remove_card(idx)
-    cards.delete_at(idx)
+    delete_at(idx)
   end
 
   def score
@@ -49,7 +59,7 @@ class Hand
     # elsif type == :full_house
     #   base_score + @card_vals.max
     elsif type == :two_pair
-      base_score + sort_by_rank[3]
+      base_score + sort_by_rank[(length + 1) / 2]
     elsif type == :one_pair
       base_score + sort_by_rank.select{|el| sort_by_rank.count(el) == 2}[0]
     elsif type == :high_card
@@ -181,7 +191,7 @@ private
   end
 
   def two_pair?
-    @card_vals.sort.chunk_while{|x, y| x == y}.to_a.length == 3
+    @card_vals.sort.chunk_while{|x, y| x == y}.to_a.length == 3 && length == 5
   end
 
   def one_pair?
