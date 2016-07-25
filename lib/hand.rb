@@ -105,21 +105,6 @@ class Hand
     length == 0
   end
 
-protected
-  def chunk_hand_vals
-    sort_by_rank.chunk_while{|x,y| x == y}.to_a.map(&:first)
-  end
-
-private
-
-  def hand_type_to_s
-    hand_check.to_s.split("_").join(" ") + "!"
-  end
-
-  def sort_cards_by_rank
-    @cards.sort!{|h, l| l.val <=> h.val}
-  end
-
   def hand_check
     # byebug
     if straight_flush?
@@ -142,6 +127,21 @@ private
       return :high_card
     end
   end
+protected
+  def chunk_hand_vals
+    sort_by_rank.chunk_while{|x,y| x == y}.to_a.map(&:first)
+  end
+
+private
+
+  def hand_type_to_s
+    hand_check.to_s.split("_").join(" ") + "!"
+  end
+
+  def sort_cards_by_rank
+    @cards.sort!{|h, l| l.val <=> h.val}
+  end
+
 
   def tiebreaker(other_hand)
     my_card_vals = chunk_hand_vals

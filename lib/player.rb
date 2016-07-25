@@ -34,10 +34,10 @@ class Player
 
   def call_bet(amt)
     hand.show
-    puts "call $#{amt} bet? (y to call, n to fold)"
+    puts "call $#{amt} bet? (any key to call, f to fold)"
     puts "your bankroll: $#{bankroll}"
-    ans = gets.chomp.upcase
-    if ans == 'Y'
+    ans = STDIN.getch
+    if ans != 'f'
       bet(amt)
       amt
     else
@@ -63,6 +63,10 @@ class Player
     end
   end
 
+  def discard(card)
+    # byebug
+    deck.push(hand.delete_at(card))
+  end
 
 private
 
@@ -108,10 +112,6 @@ private
     end
   end
 
-  def discard(card)
-    # byebug
-    deck.push(hand.delete_at(card))
-  end
 
   def take(num)
     num.times{hand.push(deck.pop!)}
